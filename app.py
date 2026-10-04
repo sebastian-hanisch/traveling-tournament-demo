@@ -103,7 +103,7 @@ with st.sidebar:
         "Teamzahl", *bounds("n_teams_slider"), step=C.N_TEAMS_STEP, key="n_teams_slider",
         help="Nur gerade Teamzahl, wie in Stück 4.",
     )
-    seed = st.slider("Karten-Saatwert", *bounds("seed_slider"), key="seed_slider",
+    seed = st.slider("Zufalls-Seed (Karte)", *bounds("seed_slider"), key="seed_slider",
                       help="Bestimmt die zufälligen Heimatstädte auf der Karte.")
     method = st.radio("Verfahren", C.METHODS, key="method_radio")
 
