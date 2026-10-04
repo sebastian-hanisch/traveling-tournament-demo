@@ -11,14 +11,14 @@ Anders als Stück 4 (Heim/Auswärts für eine FESTE Paarstruktur optimieren) ist
 frei - welches Team wann gegen wen, plus Heim/Auswärts, um die Gesamt-Reisedistanz zu minimieren. Drei
 Verfahren im Vergleich (n Teams, synthetische Heimatstädte):
 
-- **naiv** (Stück 4s break-optimaler Spielplan, komplett distanzblind): bei 8 Teams 5.742, bei 12
-  Teams 14.664 Distanzeinheiten.
-- **Lokale Suche** (SwapHomes/SwapRounds/SwapTeams, Anagnostopoulos et al. 2003): 3.962 bzw. 10.439 -
-  **31 % bzw. 29 % weniger** als der distanzblinde Spielplan.
+- **naiv** (Stück 4s break-minimaler Spielplan, komplett distanzblind): bei 8 Teams 5.610, bei 12
+  Teams 14.754 Distanzeinheiten.
+- **Lokale Suche** (SwapHomes/SwapRounds/SwapTeams, Anagnostopoulos et al. 2003): 3.947 bzw. 10.146 -
+  **30 % bzw. 31 % weniger** als der distanzblinde Spielplan.
 - **CP-SAT** (volles Modell, keine feste Paarstruktur): bei 4 Teams bewiesen optimal in 0,12 s (731,1 -
   exakt was auch die lokale Suche findet). Ab 6 Teams **nicht mehr bewiesen optimal** innerhalb von 20 s;
   bei 14 Teams liefert CP-SAT dabei durchgehend (3 Wiederholungen gemessen, 15.933-16.420) eine
-  SCHLECHTERE obere Schranke als die lokale Suche (15.329, deterministisch) im selben Zeitbudget findet.
+  SCHLECHTERE obere Schranke als die lokale Suche (14.625, deterministisch) im selben Zeitbudget findet.
 
 Das ist der Kernbefund dieses Stücks: anders als Stück 4 (CP-SAT löst bis 50 Teams durchgehend bewiesen
 optimal in Sekunden) ist das TTP selbst für kleine Ligen schwer - genau der literaturbekannte Ruf des
@@ -49,7 +49,8 @@ zuverlässig zu schlagen - eine ehrliche, gemessene Grenze, keine verdeckte Eins
   Folgerunden, höchstens $U{=}3$ gleiche Heim-/Auswärtsrunden in Folge. Ziel: Summe der Reisedistanzen
   aller Team-Touren (Start/Ende zuhause) minimieren.
 - **naive_schedule** (`ttp_scheduler.py`): Stück 4s Break-Minimierung auf der Zirkelmethode-Paarstruktur,
-  ohne Distanzbezug - dient als Startpunkt und Vergleichspolitik.
+  ohne Distanzbezug - dient als Startpunkt und Vergleichspolitik. Erreicht das Break-Minimum $3n-6$
+  (Begründung in Verifikation).
 - **local_search**: SwapHomes (Heimrecht eines Paars tauschen), SwapRounds (zwei Runden vertauschen),
   SwapTeams (zwei Teams über die ganze Saison umbenennen) - jeder Zug nur akzeptiert, wenn das Ergebnis
   weiterhin gültig ist, mit Simulated-Annealing-Temperaturplan.
@@ -67,13 +68,15 @@ zuverlässig zu schlagen - eine ehrliche, gemessene Grenze, keine verdeckte Eins
 - **Strukturell** (`tests/test_scheduler.py`): naiv/lokale Suche/CP-SAT erfüllen für $n=4\dots10$ immer
   die TTP-Grundregeln; CP-SAT bei $n=4$ stimmt exakt mit der lokalen Suche überein (beide bewiesen/de
   facto optimal).
-- **Nicht-Determinismus gefunden+gefixt beim Bau**: die erste Fassung von `naive_schedule` nutzte
-  mehrere CP-SAT-Suchworker für die Break-Minimierung - da dieses Zielkriterium meist mehrere gleich gute
-  Lösungen hat, lieferte das bei jedem Lauf eine ANDERE (aber gleich break-optimale) Lösung mit jeweils
-  anderer Reisedistanz. Ein lexikografischer Gleichstand-Tiebreak-Term löste das nicht zuverlässig
-  (Gewichte ohne Zweierpotenzen können kollidieren); gefixt durch `num_search_workers=1` speziell für
-  diesen Aufruf (sequenzielle Suche ist unabhängig vom Zielkriterium deterministisch) - verifiziert durch
-  dreifache Wiederholung bei $n=8/12/16$.
+- **Break-Minimum und Determinismus** (`tests/test_oracle_ttp.py`): `naive_schedule` ist break-minimal.
+  Weil das Rückspiel jedes Paares das Heimrecht umkehrt, kostet ein Team mit $k$ Breaks in der Hinrunde
+  $2k$ plus einen weiteren Break an der Nahtstelle, wenn $k$ ungerade ist; höchstens zwei Teams bleiben
+  in der Hinrunde ohne Break (es gibt nur zwei alternierende Muster), jedes andere kostet mindestens 3.
+  Untergrenze also $3(n-2)=3n-6$ - erreicht für alle $n=4\dots16$ und bei $n=4,6$ durch Brute Force über
+  alle Heim/Auswärts-Zuordnungen bestätigt. Frühere Fassung: Minimierung per CP-SAT mit Zeitlimit - ab
+  $n=10$ nicht bewiesen optimal und bei $n=16$ je nach Rechengeschwindigkeit 62-64 statt 42 Breaks (und
+  damit je Lauf andere Distanzen); jetzt ein Zulässigkeitsproblem (höchstens ein Break je Team in der
+  Hinrunde), das in Hundertstelsekunden gelöst wird und reproduzierbar dieselbe Lösung liefert.
 - **Politik-Vergleich** (`tests/test_evaluation.py`, `tests/test_claims.py`): lokale Suche nie schlechter
   als naiv, CP-SAT beweist bei $n=4$ das Optimum, aber nicht mehr zuverlässig bei $n=10$.
 

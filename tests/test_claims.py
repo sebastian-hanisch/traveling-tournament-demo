@@ -8,8 +8,8 @@ from ttp_evaluation import compare_methods, cp_sat_scaling
 @pytest.mark.parametrize(
     "n, naive, local_search",
     [
-        (8, 5742.1, 3962.3),
-        (12, 14663.6, 10439.2),
+        (8, 5609.7, 3946.9),
+        (12, 14753.9, 10145.7),
     ],
 )
 def test_readme_distance_numbers(n, naive, local_search):
@@ -29,9 +29,9 @@ def test_readme_local_search_beats_cp_sat_bound_at_n14():
     """Kernbefund: bei 14 Teams findet die lokale Suche eine BESSERE Loesung als CP-SAT im gleichen
     Zeitbudget (20s) liefert. n=14 statt eines knapperen n=12 gewaehlt: bei n=12 lag CP-SATs
     (nicht-deterministische, zeitlimitierte) obere Schranke in wiederholten Messungen mal knapp
-    ueber, mal knapp unter dem lokalen-Suche-Ergebnis (10.406-10.811 vs. deterministisch 10.439) -
+    ueber, mal knapp unter dem lokalen-Suche-Ergebnis (10.406-10.811 vs. deterministisch 10.439 mit der frueheren, nicht break-minimalen naiven Startloesung; heute 10.146) -
     bei n=14 war die lokale Suche in 3/3 Wiederholungen klar und mit Sicherheitsabstand besser
-    (15.933-16.420 vs. deterministisch 15.329, mindestens ~4% Abstand) - robuster gegen CI-Varianz."""
+    (15.933-16.420 vs. deterministisch 14.625, mindestens ~8% Abstand) - robuster gegen CI-Varianz."""
     cmp = compare_methods(14, seed=5, run_cp_sat=True, cp_sat_time_limit_s=20.0, ls_iters=8000)
     assert not cmp.cp_sat_is_proven
     assert cmp.local_search_distance < cmp.cp_sat_distance * 0.98

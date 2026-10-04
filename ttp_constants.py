@@ -28,5 +28,5 @@ PRESET_HELP = {
     "Kleine Liga, alle drei Verfahren gleich gut (4 Teams)": "Bei 4 Teams findet CP-SAT das bewiesene Optimum in Sekundenbruchteilen - alle drei Verfahren liegen hier nah beieinander.",
     "CP-SAT stößt an seine Grenze (8 Teams)": "Schon bei 8 Teams findet CP-SAT innerhalb des Zeitlimits meist keine bewiesen optimale Lösung mehr - typisch für das Traveling Tournament Problem.",
     "Lokale Suche schlägt CP-SAT im Zeitbudget (12 Teams)": "Bei 12 Teams liefert die lokale Suche oft eine BESSERE Lösung als CP-SAT im gleichen Zeitbudget findet - CP-SAT durchsucht den vollen, viel größeren Raum, kommt aber nicht weit genug.",
-    "Ohne Distanzbewusstsein (naiv, 10 Teams)": "Stück 4s break-optimaler Spielplan ist gültig, aber komplett distanzblind - die lokale Suche zeigt daneben, wie viel das kostet.",
+    "Ohne Distanzbewusstsein (naiv, 10 Teams)": "Stück 4s break-minimaler Spielplan ist gültig, aber komplett distanzblind - die lokale Suche zeigt daneben, wie viel das kostet.",
 }

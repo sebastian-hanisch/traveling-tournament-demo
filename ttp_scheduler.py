@@ -3,8 +3,8 @@ GANZE Spielplan frei - nicht nur Heim/Auswärts fuer eine feste Paarstruktur, so
 gegen wen antritt, gemeinsam mit Heim/Auswärts, um die Gesamt-Reisedistanz zu minimieren.
 
 Drei Verfahren:
-- `naive_schedule`: Stück 4s break-optimaler Spielplan (Zirkelmethode-Paarstruktur, CP-SAT-optimales
-  Heim/Auswärts fuer Break-Minimierung) - ignoriert Geografie komplett, dient hier als Startpunkt UND
+- `naive_schedule`: Stück 4s break-minimaler Spielplan (Zirkelmethode-Paarstruktur, CP-SAT-Heim/Auswärts
+  mit dem Break-Minimum 3n-6) - ignoriert Geografie komplett, dient hier als Startpunkt UND
   als "naive" Vergleichspolitik.
 - `local_search`: Standardzuege der TTP-Literatur (Anagnostopoulos, Michel, Van Hentenryck & Vergados
   2003) - SwapHomes, SwapRounds, SwapTeams - mit Simulated-Annealing-Akzeptanz, startet von
@@ -88,11 +88,14 @@ def round_count(n_teams: int) -> int:
 
 
 def naive_schedule(n_teams: int, time_limit_s: float = 10.0) -> Schedule:
-    """Stück 4s CP-SAT-Break-Minimierung auf der Zirkelmethode-Paarstruktur - nachweislich immer
-    gueltig fuer die TTP-Regeln (kein Wiederholungsspiel, max. 3 Runden gleicher Status), aber komplett
-    ohne Ruecksicht auf Distanz. Dient als Startpunkt der lokalen Suche und als "naive" Vergleich."""
+    """Stück 4s break-minimaler Spielplan: Zirkelmethode-Paarstruktur, Heim/Auswärts per CP-SAT so
+    gewählt, dass die Break-Zahl das Minimum 3n-6 erreicht - gültig für die TTP-Regeln (kein
+    Wiederholungsspiel, max. 3 Runden gleicher Status), aber komplett ohne Rücksicht auf Distanz.
+    Dient als Startpunkt der lokalen Suche und als "naiver" Vergleich. Vollständig deterministisch
+    (kein Zufall, keine Wanduhr-abhängige Suche), siehe Kommentar im Modell."""
     all_rounds = _pair_rounds(n_teams)
     n_rounds = len(all_rounds)
+    leg = n_rounds // 2
     teams = list(range(n_teams))
 
     model = cp_model.CpModel()
@@ -107,30 +110,28 @@ def naive_schedule(n_teams: int, time_limit_s: float = 10.0) -> Schedule:
         r1, r2 = rs
         model.Add(home[a, r1] + home[a, r2] == 1)
 
-    breaks = []
+    # Break-Minimum als Zulässigkeitsproblem statt als Minimierung. Der zweite Spielabschnitt ist
+    # zwangsläufig das Spiegelbild des ersten (jedes Paar wechselt das Heimrecht), also kostet ein Team
+    # mit k Breaks im ersten Abschnitt 2k plus 1, falls k ungerade ist (Break an der Nahtstelle).
+    # Höchstens zwei Teams können im ersten Abschnitt ganz ohne Break bleiben (es gibt nur zwei
+    # alternierende Muster, und zwei Teams mit gleichem Muster könnten nie gegeneinander spielen);
+    # jedes andere Team kostet mindestens 3. Untergrenze also 3(n-2) = 3n-6, und genau sie wird
+    # erreicht, wenn jedes Team im ersten Abschnitt höchstens einen Break hat. Diese Nebenbedingung
+    # ersetzt die frühere Minimierung: CP-SAT beweist bei n >= 10 in 10 s keine Optimalität, die
+    # zeitlimitierte Minimierung lieferte bei n=16 je nach Rechengeschwindigkeit 62-64 statt 42 Breaks.
+    # Das Zulässigkeitsproblem ist dagegen in Hundertstelsekunden gelöst (1 Worker: reproduzierbar).
     for t in teams:
-        for r in range(1, n_rounds):
+        leg_breaks = []
+        for r in range(1, leg):
             bv = model.NewBoolVar(f"brk_{t}_{r}")
             model.Add(home[t, r] - home[t, r - 1] == 0).OnlyEnforceIf(bv)
             model.Add(home[t, r] - home[t, r - 1] != 0).OnlyEnforceIf(bv.Not())
-            breaks.append(bv)
-    model.Minimize(sum(breaks))
+            leg_breaks.append(bv)
+        model.Add(sum(leg_breaks) <= 1)
 
     solver = cp_model.CpSolver()
-    solver.parameters.max_time_in_seconds = time_limit_s
-    # NUR 1 Worker (nicht NUM_SEARCH_WORKERS): das Break-Minimum hat i.d.R. mehrere gleich gute
-    # Loesungen (einzelnes Zielkriterium), und WELCHE davon zurueckkommt, wird als Startpunkt der
-    # lokalen Suche weiterverwendet UND direkt als "naive" Distanz angezeigt/getestet - die Wahl
-    # kaskadiert also, anders als bei solve_exact()s einmaligem Anzeige-Wert. Ein zuerst versuchter
-    # lexikografischer Zweit-Term (Gewicht je home[t,r]) loeste das NICHT zuverlaessig: da die
-    # Gewichte keine Zweierpotenzen sind, koennen verschiedene Teilmengen densel­ben Summenwert
-    # ergeben (Teilmengensumme-Kollision) - bei n=8/12 blieb messbare Resteindeutigkeit aus.
-    # Zweierpotenz-Gewichte waeren injektiv, sprengen aber ab ~20 Variablen den int64-Bereich.
-    # Sequenzielle Suche (1 Worker) ist dagegen unabhaengig vom Zielkriterium deterministisch
-    # (kein Thread-Wettlauf) - gemessen (n=8/12/16, je 3 Wiederholungen): exakt reproduzierbar.
-    # Kosten: bis zu time_limit_s Wartezeit bei groesserem n (siehe Spinner in app.py) - siehe project
-    # memory zum CP-SAT-Lexikografischen-Gleichstand (dritte Wiederholung, genau dieser Kaskaden-Fall).
-    solver.parameters.num_search_workers = 1
+    solver.parameters.max_time_in_seconds = time_limit_s  # nur Sicherheitsnetz, wird nie erreicht
+    solver.parameters.num_search_workers = 1  # sequenziell: kein Thread-Wettlauf, gleiche Lösung je Lauf
     status = solver.Solve(model)
     if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         raise RuntimeError(f"Break-Minimierung fand keine Lösung (status={status})")

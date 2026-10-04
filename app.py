@@ -73,8 +73,8 @@ st.caption(
 with st.expander("Drei Verfahren im Vergleich", expanded=True):
     st.markdown(
         """
-1. **naiv**: Stück 4s break-optimaler Spielplan (Zirkelmethode-Paarstruktur, CP-SAT-optimales
-   Heim/Auswärts für Break-Minimierung) - gültig, aber komplett distanzblind.
+1. **naiv**: Stück 4s break-minimaler Spielplan (Zirkelmethode-Paarstruktur, CP-SAT-Heim/Auswärts
+   mit dem Break-Minimum 3n-6) - gültig, aber komplett distanzblind.
 2. **Lokale Suche**: Standardzüge der TTP-Literatur (Anagnostopoulos, Michel, Van Hentenryck & Vergados
    2003) - SwapHomes, SwapRounds, SwapTeams - startet vom naiven Spielplan, sucht mit
    Simulated-Annealing-Akzeptanz nach kürzeren Touren.

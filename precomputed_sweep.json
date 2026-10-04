@@ -7,33 +7,33 @@
     },
     {
       "n_teams": 6,
-      "naive_distance": 3015.315242865696,
-      "local_search_distance": 2294.3348068870732
+      "naive_distance": 3300.0759514391457,
+      "local_search_distance": 2288.9999093796355
     },
     {
       "n_teams": 8,
-      "naive_distance": 5742.116586458443,
-      "local_search_distance": 3962.2651223960693
+      "naive_distance": 5609.677138116278,
+      "local_search_distance": 3946.8535232566264
     },
     {
       "n_teams": 10,
-      "naive_distance": 9942.093943688804,
-      "local_search_distance": 7326.886713845908
+      "naive_distance": 10100.299133377417,
+      "local_search_distance": 6783.620808504781
     },
     {
       "n_teams": 12,
-      "naive_distance": 14663.616923756346,
-      "local_search_distance": 10439.222487564693
+      "naive_distance": 14753.853729187764,
+      "local_search_distance": 10145.685735330175
     },
     {
       "n_teams": 14,
-      "naive_distance": 21044.009070618915,
-      "local_search_distance": 15328.656779776487
+      "naive_distance": 21180.15707880388,
+      "local_search_distance": 14624.782992621444
     },
     {
       "n_teams": 16,
-      "naive_distance": 27839.483269318225,
-      "local_search_distance": 19757.969642437325
+      "naive_distance": 28463.927891610692,
+      "local_search_distance": 20528.79011258014
     }
   ],
   "sweep_cp_sat": [
@@ -46,29 +46,29 @@
     },
     {
       "n_teams": 6,
-      "naive_distance": 3015.315242865696,
-      "local_search_distance": 2294.3348068870732,
+      "naive_distance": 3300.0759514391457,
+      "local_search_distance": 2288.9999093796355,
       "cp_sat_distance": 2259.606,
       "cp_sat_is_proven": false
     },
     {
       "n_teams": 8,
-      "naive_distance": 5742.116586458443,
-      "local_search_distance": 3962.2651223960693,
+      "naive_distance": 5609.677138116278,
+      "local_search_distance": 3946.8535232566264,
       "cp_sat_distance": 3801.515,
       "cp_sat_is_proven": false
     },
     {
       "n_teams": 10,
-      "naive_distance": 9942.093943688804,
-      "local_search_distance": 7326.886713845908,
+      "naive_distance": 10100.299133377417,
+      "local_search_distance": 6783.620808504781,
       "cp_sat_distance": 7264.531,
       "cp_sat_is_proven": false
     },
     {
       "n_teams": 12,
-      "naive_distance": 14663.616923756346,
-      "local_search_distance": 10439.222487564693,
+      "naive_distance": 14753.853729187764,
+      "local_search_distance": 10145.685735330175,
       "cp_sat_distance": 10810.948,
       "cp_sat_is_proven": false
     }
