@@ -133,7 +133,7 @@ def naive_schedule(n_teams: int, time_limit_s: float = 10.0) -> Schedule:
     solver.parameters.num_search_workers = 1
     status = solver.Solve(model)
     if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
-        raise RuntimeError(f"Break-Minimierung fand keine Loesung (status={status})")
+        raise RuntimeError(f"Break-Minimierung fand keine Lösung (status={status})")
 
     rounds = []
     for r, pairs in enumerate(all_rounds):

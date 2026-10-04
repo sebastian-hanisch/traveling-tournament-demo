@@ -20,13 +20,13 @@ CP_SAT_SWEEP_TIME_LIMIT_S = 20.0
 _BASE = {"n_teams": DEFAULT_N_TEAMS, "seed": DEFAULT_SEED, "method": DEFAULT_METHOD}
 PRESETS = {
     "Kleine Liga, alle drei Verfahren gleich gut (4 Teams)": {**_BASE, "n_teams": 4, "method": "CP-SAT (kleine Ligen)"},
-    "CP-SAT stoesst an seine Grenze (8 Teams)": {**_BASE, "n_teams": 8, "method": "CP-SAT (kleine Ligen)"},
-    "Lokale Suche schlaegt CP-SAT im Zeitbudget (12 Teams)": {**_BASE, "n_teams": 12, "method": "Lokale Suche"},
+    "CP-SAT stößt an seine Grenze (8 Teams)": {**_BASE, "n_teams": 8, "method": "CP-SAT (kleine Ligen)"},
+    "Lokale Suche schlägt CP-SAT im Zeitbudget (12 Teams)": {**_BASE, "n_teams": 12, "method": "Lokale Suche"},
     "Ohne Distanzbewusstsein (naiv, 10 Teams)": {**_BASE, "n_teams": 10, "method": "naiv (Stück 4, distanzblind)"},
 }
 PRESET_HELP = {
     "Kleine Liga, alle drei Verfahren gleich gut (4 Teams)": "Bei 4 Teams findet CP-SAT das bewiesene Optimum in Sekundenbruchteilen - alle drei Verfahren liegen hier nah beieinander.",
-    "CP-SAT stoesst an seine Grenze (8 Teams)": "Schon bei 8 Teams findet CP-SAT innerhalb des Zeitlimits meist keine bewiesen optimale Loesung mehr - typisch fuer das Traveling Tournament Problem.",
-    "Lokale Suche schlaegt CP-SAT im Zeitbudget (12 Teams)": "Bei 12 Teams liefert die lokale Suche oft eine BESSERE Loesung als CP-SAT im gleichen Zeitbudget findet - CP-SAT durchsucht den vollen, viel groesseren Raum, kommt aber nicht weit genug.",
-    "Ohne Distanzbewusstsein (naiv, 10 Teams)": "Stück 4s break-optimaler Spielplan ist gueltig, aber komplett distanzblind - die lokale Suche zeigt daneben, wie viel das kostet.",
+    "CP-SAT stößt an seine Grenze (8 Teams)": "Schon bei 8 Teams findet CP-SAT innerhalb des Zeitlimits meist keine bewiesen optimale Lösung mehr - typisch für das Traveling Tournament Problem.",
+    "Lokale Suche schlägt CP-SAT im Zeitbudget (12 Teams)": "Bei 12 Teams liefert die lokale Suche oft eine BESSERE Lösung als CP-SAT im gleichen Zeitbudget findet - CP-SAT durchsucht den vollen, viel größeren Raum, kommt aber nicht weit genug.",
+    "Ohne Distanzbewusstsein (naiv, 10 Teams)": "Stück 4s break-optimaler Spielplan ist gültig, aber komplett distanzblind - die lokale Suche zeigt daneben, wie viel das kostet.",
 }
