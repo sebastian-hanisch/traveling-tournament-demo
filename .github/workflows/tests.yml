@@ -24,8 +24,8 @@ jobs:
           python-version: "3.12"
           cache: "pip"
 
-      - name: Abhaengigkeiten installieren
+      - name: Abhängigkeiten installieren
         run: pip install -r requirements-dev.txt
 
-      - name: Tests ausfuehren
+      - name: Tests ausführen
         run: python -m pytest tests/ -v --durations=10
